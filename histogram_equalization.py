@@ -28,7 +28,7 @@ def cdf(PMF): # Calculate the Cumulative Distribution Function (CDF)
     i =0
     temp = []
     
-    for i in range(len(PMF)):
+    for i in range(len(PMF)): # CDF for a given intensity is the PFM of that intensity + the sum of all the previous PMF vlaues.
     
         PMF[i]
         
@@ -36,17 +36,14 @@ def cdf(PMF): # Calculate the Cumulative Distribution Function (CDF)
 
         temp.append(PMF[i])
 
-        # CDF.append(PMF[i] + CDF[-1])
-        i = CDF[-1] # Set i to be the value of the last index in CDF    
-
     return CDF   
 
-def equalize(channel, CDF):
+def equalize(channel, CDF): # Apply CDF to the color channel to equalize the image
 
     idx = 0
     height, length = channel.shape
 
-    for i in range(height):
+    for i in range(height): # For each pixel, set its value to the CDF for its given intensity * 255
         for j in range(length):
 
             idx = channel[i][j]
@@ -75,6 +72,8 @@ if __name__ == "__main__":
 
         """
 
+        # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
         b, g, r = cv2.split(frame) # Separate frame into 3 color channels
 
         # Calculate probability mass function
@@ -82,15 +81,21 @@ if __name__ == "__main__":
         g_PMF = pmf(g)
         r_PMF = pmf(r)
 
+        # gray_PMF = pmf(gray)
+
         # Calculate Cumulative Distribution Function (CDF)
         b_CDF = cdf(b_PMF)
         g_CDF = cdf(g_PMF)
         r_CDF = cdf(r_PMF)
 
+        gray_CDF = cdf(gray_PMF)
+
         # Apply equilization
         b_eq = equalize(b,b_CDF)
         g_eq = equalize(g, g_CDF)
-        r_eq = equalize(r, r_CDF)   
+        r_eq = equalize(r, r_CDF)  
+
+        # gray_eq = equalize(gray, gray_CDF) 
 
         # Combine channels
         final = cv2.merge((b_eq, g_eq, r_eq))
