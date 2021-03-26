@@ -1,6 +1,10 @@
+import glob
 import cv2
 
-
+def img_stitch(folder_path):
+    
+    for img in glob.glob(folder_path + "*.png"):
+        frame = cv2.imread(img)
 
 
 
