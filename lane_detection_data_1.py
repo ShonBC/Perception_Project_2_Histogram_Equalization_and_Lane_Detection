@@ -32,7 +32,7 @@ if __name__ == "__main__":
     # out = cv2.VideoWriter('lane_detection_1.mp4', fourcc, 144, (1920, 1080))
 
     # img_stitch() # Stitch images together for a video file
-    cap = cv2.VideoCapture('data_1.mp4')
+    cap = cv2.VideoCapture('media/data_1/data_1.mp4')
 
     while True:
 
