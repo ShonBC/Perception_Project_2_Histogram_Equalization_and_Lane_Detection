@@ -26,14 +26,35 @@ def cdf(PMF): # Calculate the Cumulative Distribution Function (CDF)
 
     CDF = [0]
     i =0
-    while i < 255:
-        for j in range(len(PMF)):
+    temp = []
+    
+    for i in range(len(PMF)):
+    
+        PMF[i]
         
-            PMF[i]
-            CDF.append(PMF[i] + CDF[-1])
-            i = CDF[-1] # Set i to be the value of the last index in CDF    
+        CDF.append(PMF[i] + sum(temp))
 
-    return CDF          
+        temp.append(PMF[i])
+
+        # CDF.append(PMF[i] + CDF[-1])
+        i = CDF[-1] # Set i to be the value of the last index in CDF    
+
+    return CDF   
+
+def equalize(channel, CDF):
+
+    idx = 0
+    height, length = channel.shape
+
+    for i in range(height):
+        for j in range(length):
+
+            idx = channel[i][j]
+
+            channel[i][j] = CDF[idx] * 255
+    
+    return channel
+
 
 if __name__ == "__main__":
 
@@ -65,9 +86,16 @@ if __name__ == "__main__":
         b_CDF = cdf(b_PMF)
         g_CDF = cdf(g_PMF)
         r_CDF = cdf(r_PMF)
-        
 
-        cv2.imshow("Video Feed", frame) # Show the projection
+        # Apply equilization
+        b_eq = equalize(b,b_CDF)
+        g_eq = equalize(g, g_CDF)
+        r_eq = equalize(r, r_CDF)   
+
+        # Combine channels
+        final = cv2.merge((b_eq, g_eq, r_eq))
+
+        cv2.imshow("Video Feed", final) # Show the projection
 
         # Condition to break the while loop
         i = cv2.waitKey(50)
