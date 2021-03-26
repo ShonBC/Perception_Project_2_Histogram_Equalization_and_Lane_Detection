@@ -25,13 +25,13 @@ def pmf(frame): # Calculate Probability Mass Function (PMF)
 def cdf(PMF): # Calculate the Cumulative Distribution Function (CDF)
 
     CDF = [0]
-
-    # while i < 255:
-        # for j in range(len(PMF)):
+    i =0
+    while i < 255:
+        for j in range(len(PMF)):
         
-        #     PMF[i]
-        #     CDF.append(PMF[i] + CDF[-1])
-        #     i = CDF[-1] # Set i to be the value of the last index in CDF    
+            PMF[i]
+            CDF.append(PMF[i] + CDF[-1])
+            i = CDF[-1] # Set i to be the value of the last index in CDF    
 
     return CDF          
 
