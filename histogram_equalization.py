@@ -52,6 +52,16 @@ def equalize(channel, CDF): # Apply CDF to the color channel to equalize the ima
     
     return channel
 
+def gamma_corret(frame, gamma = 1): # Gamma Correction method 
+   
+    i_gamma = 1/gamma # invert gamma
+    table = np.empty((1,256), np.uint8)
+    for i in range(256):
+        table[0,i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+
+    corr_frame = cv2.LUT(frame, table)
+
+    return corr_frame
 
 if __name__ == "__main__":
 
@@ -72,35 +82,42 @@ if __name__ == "__main__":
 
         """
 
-        # gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # Gamma Correction
+        corr_frame = gamma_corret(gray, gamma = .2)
+        cv2.imshow("Video Feed", corr_frame) # Show the projection
 
-        b, g, r = cv2.split(frame) # Separate frame into 3 color channels
 
-        # Calculate probability mass function
-        b_PMF = pmf(b)
-        g_PMF = pmf(g)
-        r_PMF = pmf(r)
+        # b, g, r = cv2.split(frame) # Separate frame into 3 color channels
 
-        # gray_PMF = pmf(gray)
+        # # Calculate probability mass function
+        # b_PMF = pmf(b)
+        # g_PMF = pmf(g)
+        # r_PMF = pmf(r)
 
-        # Calculate Cumulative Distribution Function (CDF)
-        b_CDF = cdf(b_PMF)
-        g_CDF = cdf(g_PMF)
-        r_CDF = cdf(r_PMF)
+        gray_PMF = pmf(gray)
+
+        # # Calculate Cumulative Distribution Function (CDF)
+        # b_CDF = cdf(b_PMF)
+        # g_CDF = cdf(g_PMF)
+        # r_CDF = cdf(r_PMF)
 
         gray_CDF = cdf(gray_PMF)
 
-        # Apply equilization
-        b_eq = equalize(b,b_CDF)
-        g_eq = equalize(g, g_CDF)
-        r_eq = equalize(r, r_CDF)  
+        # # Apply equilization
+        # b_eq = equalize(b,b_CDF)
+        # g_eq = equalize(g, g_CDF)
+        # r_eq = equalize(r, r_CDF)  
 
-        # gray_eq = equalize(gray, gray_CDF) 
+        gray_eq = equalize(gray, gray_CDF) 
 
-        # Combine channels
-        final = cv2.merge((b_eq, g_eq, r_eq))
+        # # Combine channels
+        # final = cv2.merge((b_eq, g_eq, r_eq))
 
-        cv2.imshow("Video Feed", final) # Show the projection
+        # # Gamma Correction
+        # corr_frame = gamma_corret(gray, gamma = 1)
+
+        # cv2.imshow("Video Feed", gray) # Show the projection
 
         # Condition to break the while loop
         i = cv2.waitKey(50)
