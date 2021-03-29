@@ -13,6 +13,11 @@ if __name__ == "__main__":
          
         ret, frame = cap.read()
 
+        if not ret: # If no frame returned, break the loop
+            break
+        
+        frame = cv2.resize(frame, (720,480))
+        
         cv2.imshow("frame", frame)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
