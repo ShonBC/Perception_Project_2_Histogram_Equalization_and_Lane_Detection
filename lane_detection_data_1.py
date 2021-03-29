@@ -72,9 +72,12 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
     l_lines = []
     r_lines = []
 
-    for i in lines:
+    for i in range(len(lines)):
 
-        param = np.polyfit((lines[i][0], lines[i][2]), (lines[i][1], lines[i][3]), 1) # Fit to a first degree polynomial
+        x_1, y_1, x_2, y_2 = lines[i].reshape(4)
+        param = np.polyfit((x_1, x_2), (y_1, y_2), 1) # Fit to a first degree polynomial
+
+        # param = np.polyfit((lines[i][0][0], lines[i][0][2]), (lines[i][0][1], lines[i][0][3]), 1) # Fit to a first degree polynomial
 
         slope = param[0]
         y_int = param[1]
@@ -87,15 +90,15 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
     l_avg = np.average(l_lines, axis=0)
     r_avg = np.average(r_lines, axis=0)
 
-    l_bfl = line_pos(frame, l_avg)
-    r_bfl = line_pos(frame, r_avg)
+    l_bfl = line_pos(l_avg)
+    r_bfl = line_pos(r_avg)
 
     cv2.line(frame, (l_bfl[0], l_bfl[1]), (l_bfl[2], l_bfl[3]), (255, 0, 0), 3)
     cv2.line(frame, (r_bfl[0], r_bfl[1]), (r_bfl[2], r_bfl[3]), (255, 0, 0), 3)
 
     return l_bfl, r_bfl    
 
-def line_pos(frame, line): # Using line slope and y-intercept, return x,y coordinates
+def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
 
     slope = line[0]
     y_int = line[1]
@@ -119,13 +122,14 @@ def h_lines(frame, roi): # Use Probablistic Hough Transform to detect lines from
 
     lines = cv2.HoughLinesP(roi, rho_tolerance, theta_tolerance, min_vote, minLineLength= min_length, maxLineGap= 80)
 
-    if lines is not None:
-        for i in range(len(lines)):
-            l = lines[i][0]
-            # cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3)
-    
-    return l
+    return lines
 
+def show_lines(frame, lines): # Display lines
+
+    if lines is not None: 
+            for i in range(len(lines)):
+                l = lines[i][0]
+                cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3) 
 
 def top_down(img):
 
@@ -163,12 +167,16 @@ if __name__ == "__main__":
         # crop = copy.deepcopy(frame[int(height/2 - 30) : height,  :width])
       
         canny = cnts(frame)
-        roi = ROI(canny)
-        lines = h_lines(frame, roi)
+        roi = ROI(canny) # Region of Interest
+        lines = h_lines(frame, roi) # Compute Hough lines
+        show_lines(frame, lines)
         # l_bfl, r_bfl = 
-        fit(frame, lines)
-        # cv2.imshow('Canny', canny)
+        fit(frame, lines) # Average the returned Hough lines
+
         cv2.imshow('ROI', roi)
+
+
+
 
         # gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
 
