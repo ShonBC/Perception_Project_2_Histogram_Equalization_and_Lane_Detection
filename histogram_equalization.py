@@ -71,6 +71,7 @@ if __name__ == "__main__":
         
     while True:
         ret, frame = cap.read()
+        frame = cv2.resize(frame, (720,480))
 
         """
         Break frame out into the 3 color channels
