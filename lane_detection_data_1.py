@@ -1,5 +1,7 @@
 # Shon Cortes
 
+# Need to fix fit method. ERROR: OverflowError: signed integer is greater than maximum
+
 import glob
 import cv2
 from cv2 import data
