@@ -1,3 +1,5 @@
+# Shon Cortes
+
 import glob
 import cv2
 from cv2 import data
