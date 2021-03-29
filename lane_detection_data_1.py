@@ -31,7 +31,7 @@ def cnts(image): # Use canny edge detection to define and display edges. Returns
     k = 5
     blurr = cv2.GaussianBlur(image, (k, k), 0) # Blurr frame
 
-    threshold_1 = 10 # Define Canny edge detection thresholds
+    threshold_1 = 50 # Define Canny edge detection thresholds
     threshold_2 = 150 # Define Canny edge detection thresholds
     canny = cv2.Canny(blurr, threshold_1, threshold_2) # Call Canny edge detection on blurred image
     # _, bianary = cv2.threshold(canny, 230, 255, 0) # Convert to bianary image
@@ -57,7 +57,8 @@ def cnts(image): # Use canny edge detection to define and display edges. Returns
 
 def ROI(frame): # Isolate the region of interest (the road)
 
-    roi = np.array([[(0, 380), (0, height), (480, height), (340, 200)]])
+    # roi = np.array([[(0, 380), (0, height), (480, height), (340, 200)]])
+    roi = np.array([[(84, height), (0, height), (475, height), (340, 200)]])
 
     mask = np.zeros_like(frame)
     cv2.fillPoly(mask, roi, 255)
@@ -66,21 +67,64 @@ def ROI(frame): # Isolate the region of interest (the road)
 
     return mask
 
+def fit(frame, lines): # Takes the average of the lines detected and creates a best fit line 
+
+    l_lines = []
+    r_lines = []
+
+    for i in lines:
+
+        param = np.polyfit((lines[i][0], lines[i][2]), (lines[i][1], lines[i][3]), 1) # Fit to a first degree polynomial
+
+        slope = param[0]
+        y_int = param[1]
+
+        if slope < 0:
+            l_lines.append((slope,y_int))
+        else:
+            r_lines.append((slope, y_int))
+        
+    l_avg = np.average(l_lines, axis=0)
+    r_avg = np.average(r_lines, axis=0)
+
+    l_bfl = line_pos(frame, l_avg)
+    r_bfl = line_pos(frame, r_avg)
+
+    cv2.line(frame, (l_bfl[0], l_bfl[1]), (l_bfl[2], l_bfl[3]), (255, 0, 0), 3)
+    cv2.line(frame, (r_bfl[0], r_bfl[1]), (r_bfl[2], r_bfl[3]), (255, 0, 0), 3)
+
+    return l_bfl, r_bfl    
+
+def line_pos(frame, line): # Using line slope and y-intercept, return x,y coordinates
+
+    slope = line[0]
+    y_int = line[1]
+
+    x1 = int((height - y_int) / slope)
+    y1 = height
+    y2 = int(height / 2)
+    x2 = int((y2 - y_int) / slope)
+    
+    ln_coord = np.array([x1, y1, x2, y2])
+
+    return ln_coord    
 
 
-def h_lines(frame): # Use Probablistic Hough Transform to detect lines from canny edges 
+def h_lines(frame, roi): # Use Probablistic Hough Transform to detect lines from canny edges 
 
-    rho_tolerance = 1 # measured in pixels
+    rho_tolerance = 2 # measured in pixels
     theta_tolerance = np.pi / 180 # measured in radians
-    vote_thresh = 100 # minimum points on the line detected for it to be considered as a line
+    min_vote = 100 # minimum points on the line detected for it to be considered as a line
     min_length = 100
 
-    lines = cv2.HoughLinesP(frame, rho_tolerance, theta_tolerance, vote_thresh, min_length, maxLineGap= 200)
+    lines = cv2.HoughLinesP(roi, rho_tolerance, theta_tolerance, min_vote, minLineLength= min_length, maxLineGap= 80)
 
     if lines is not None:
-        for i in range(0, len(lines)):
+        for i in range(len(lines)):
             l = lines[i][0]
-            cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA) 
+            # cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3)
+    
+    return l
 
 
 def top_down(img):
@@ -120,8 +164,9 @@ if __name__ == "__main__":
       
         canny = cnts(frame)
         roi = ROI(canny)
-        h_lines(roi)
-
+        lines = h_lines(frame, roi)
+        # l_bfl, r_bfl = 
+        fit(frame, lines)
         # cv2.imshow('Canny', canny)
         cv2.imshow('ROI', roi)
 
