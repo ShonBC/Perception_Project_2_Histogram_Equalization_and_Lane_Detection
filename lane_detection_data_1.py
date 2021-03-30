@@ -60,7 +60,7 @@ def cnts(image): # Use canny edge detection to define and display edges. Returns
 def ROI(frame): # Isolate the region of interest (the road)
 
     # roi = np.array([[(0, 380), (0, height), (480, height), (340, 200)]])
-    roi = np.array([[(84, height), (0, height), (475, height), (340, 200)]])
+    roi = np.array([[(55, height - 10), (0, height - 10), (530, height - 10), (340, 200)]])
 
     mask = np.zeros_like(frame)
     cv2.fillPoly(mask, roi, 255)
@@ -86,6 +86,8 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
 
         if slope < 0:
             l_lines.append((slope,y_int))
+        elif int(slope) == 0:
+            continue
         else:
             r_lines.append((slope, y_int))
         
@@ -113,7 +115,6 @@ def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
     ln_coord = np.array([x1, y1, x2, y2])
 
     return ln_coord    
-
 
 def h_lines(frame, roi): # Use Probablistic Hough Transform to detect lines from canny edges 
 
@@ -171,7 +172,7 @@ if __name__ == "__main__":
         canny = cnts(frame)
         roi = ROI(canny) # Region of Interest
         lines = h_lines(frame, roi) # Compute Hough lines
-        show_lines(frame, lines)
+        # show_lines(frame, lines)
         # l_bfl, r_bfl = 
         fit(frame, lines) # Average the returned Hough lines
 

@@ -63,14 +63,19 @@ def gamma_corret(frame, gamma = 1): # Gamma Correction method
 
     return corr_frame
 
+# Define Video out properties
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter('projection.mp4', fourcc, 240, (720,480))
+
 if __name__ == "__main__":
 
-    # Define Video out properties
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter('projection.mp4', fourcc, 240, (1920, 1080))
-        
     while True:
+
         ret, frame = cap.read()
+
+        if not ret: # If no frame returned, break the loop  
+            break
+        
         frame = cv2.resize(frame, (720,480))
 
         """
@@ -85,7 +90,7 @@ if __name__ == "__main__":
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Gamma Correction
-        corr_frame = gamma_corret(gray, gamma = .2)
+        corr_frame = gamma_corret(gray, gamma = .1)
         cv2.imshow("Video Feed", corr_frame) # Show the projection
 
 
@@ -120,6 +125,9 @@ if __name__ == "__main__":
 
         # cv2.imshow("Video Feed", gray) # Show the projection
 
+        out.write(corr_frame)
+    
+
         # Condition to break the while loop
         i = cv2.waitKey(50)
         if i == 27:
@@ -128,4 +136,5 @@ if __name__ == "__main__":
     # Wait for ESC key to be pressed before releasing capture method and closing windows
     cv2.waitKey(0)
     cap.release()
+    out.release
     cv2.destroyAllWindows()
