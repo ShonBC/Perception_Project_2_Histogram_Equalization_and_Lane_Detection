@@ -36,30 +36,11 @@ def cnts(image): # Use canny edge detection to define and display edges. Returns
     threshold_1 = 50 # Define Canny edge detection thresholds
     threshold_2 = 150 # Define Canny edge detection thresholds
     canny = cv2.Canny(blurr, threshold_1, threshold_2) # Call Canny edge detection on blurred image
-    # _, bianary = cv2.threshold(canny, 230, 255, 0) # Convert to bianary image
-
-    # contours, hierarchy = cv2.findContours(bianary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) # Find all contours in image. cv2.RETR_TREE gives all hierarchy information, cv2.CHAIN_APPROX_SIMPLE stores only the minimum required points to define a contour.
-        
-    # g_cnts = [] # Store only the contours with parents and children.
-    # g_hier = [] # Store hierarchy of contours with parents and children.
-    
-    # for i in range(len(hierarchy)): # Filter out contours with no parent to isolate ar tag.
-    #     for j in range(len(hierarchy[i])):
-    #         if hierarchy[i][j][3] != -1 and hierarchy[i][j][2] != -1:
-    #             g_cnts.append(contours[j])
-    #             g_hier.append(hierarchy[i][j])
-
-    # area = [] # Store area of filtered contours with parents and children
-    # for i in range(len(g_cnts)):
-    #     area.append(cv2.contourArea(g_cnts[i]))
-
-    # cv2.drawContours(image, g_cnts, -1, (0, 255, 0), 3)
-
+  
     return canny
 
 def ROI(frame): # Isolate the region of interest (the road)
 
-    # roi = np.array([[(0, 380), (0, height), (480, height), (340, 200)]])
     roi = np.array([[(55, height - 10), (0, height - 10), (530, height - 10), (340, 200)]])
 
     mask = np.zeros_like(frame)
@@ -78,8 +59,6 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
 
         x_1, y_1, x_2, y_2 = lines[i].reshape(4)
         param = np.polyfit((x_1, x_2), (y_1, y_2), 1) # Fit to a first degree polynomial
-
-        # param = np.polyfit((lines[i][0][0], lines[i][0][2]), (lines[i][0][1], lines[i][0][3]), 1) # Fit to a first degree polynomial
 
         slope = param[0]
         y_int = param[1]
@@ -167,29 +146,14 @@ if __name__ == "__main__":
 
         frame = cv2.resize(frame, (720,480))
         height, width, _ = frame.shape
-        # crop = copy.deepcopy(frame[int(height/2 - 30) : height,  :width])
-      
+
         canny = cnts(frame)
         roi = ROI(canny) # Region of Interest
         lines = h_lines(frame, roi) # Compute Hough lines
-        # show_lines(frame, lines)
-        # l_bfl, r_bfl = 
+
         fit(frame, lines) # Average the returned Hough lines
 
         cv2.imshow('ROI', roi)
-
-
-
-
-        # gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
-
-        # mask = white_mask(crop)
-        # canny = cnts(mask)
-        # cv2.imshow("white", mask)
-
-        # canny = cnts(crop)
-        # h_lines(canny)
-        # cv2.imshow("crop", crop)
 
         cv2.imshow("frame", frame)
 
