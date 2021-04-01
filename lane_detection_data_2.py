@@ -19,6 +19,7 @@ if __name__ == "__main__":
         frame = cv2.resize(frame, (720,480))
         
         cv2.imshow("frame", frame)
+        # out.write(frame)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
