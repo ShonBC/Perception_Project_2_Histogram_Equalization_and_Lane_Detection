@@ -128,6 +128,12 @@ def top_down(img):
 
     return top
 
+def rec(frame):
+    # Define Video out properties
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter('lanes_data_1.mp4', fourcc, 240, (720,480))
+    out.write(frame)
+
 if __name__ == "__main__":
 
     # Define Video out properties
@@ -153,9 +159,11 @@ if __name__ == "__main__":
 
         fit(frame, lines) # Average the returned Hough lines
 
-        cv2.imshow('ROI', roi)
+        # cv2.imshow('ROI', roi)
 
         cv2.imshow("frame", frame)
+
+        rec(frame)        
 
         if cv2.waitKey(50) & 0xFF == ord('q'):
             break
