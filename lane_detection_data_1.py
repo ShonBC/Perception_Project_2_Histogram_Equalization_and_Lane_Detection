@@ -10,14 +10,23 @@ import numpy as np
 
 def img_stitch(): # Takes images from data folder and creates a video file to be used for lane detection
     
-    video =[]
+    video = []
+    images = []
 
-    for img in glob.glob("media/data_1/data/*.png"): # Creates array of all images to be used in video file
-        frame = cv2.imread(img)
-        video.append(frame)
+    for filename in glob.glob("media/data_1/data/*.png"): # Creates array of all images to be used in video file
         
-        height, width, _ = frame.shape
-        size = (width, height)
+        images.append(filename)
+
+    images.sort()
+
+    for img in images: # Creates array of all images to be used in video file
+            frame = cv2.imread(img)
+            video.append(frame)
+            
+            height, width, _ = frame.shape
+            size = (width, height)
+
+    
 
     # Define Video out properties
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -140,6 +149,9 @@ if __name__ == "__main__":
     # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     # out = cv2.VideoWriter('lane_detection_1.mp4', fourcc, 144, (1920, 1080))
 
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter('lanes_data_1.mp4', fourcc, 20, (720,480))
+    
     # img_stitch() # Stitch images together for a video file
     cap = cv2.VideoCapture('media/data_1/data_1.mp4')
 
@@ -162,10 +174,11 @@ if __name__ == "__main__":
         # cv2.imshow('ROI', roi)
 
         cv2.imshow("frame", frame)
+        out.write(frame)
 
-        rec(frame)        
+        # rec(frame)        
 
-        if cv2.waitKey(50) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     cv2.waitKey(0)
     cap.release()
