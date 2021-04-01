@@ -1,6 +1,5 @@
 # Shon Cortes
 
-# Need to fix fit method. ERROR: OverflowError: signed integer is greater than maximum
 
 import glob
 import cv2
@@ -122,7 +121,7 @@ def show_lines(frame, lines): # Display lines
                 l = lines[i][0]
                 cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3) 
 
-def top_down(img):
+def top_down(img): # Homography for top down view
 
     w, h = 200, 500
 
@@ -137,18 +136,9 @@ def top_down(img):
 
     return top
 
-def rec(frame):
-    # Define Video out properties
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter('lanes_data_1.mp4', fourcc, 240, (720,480))
-    out.write(frame)
-
 if __name__ == "__main__":
 
-    # Define Video out properties
-    # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    # out = cv2.VideoWriter('lane_detection_1.mp4', fourcc, 144, (1920, 1080))
-
+    # Output video parameters
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter('lanes_data_1.mp4', fourcc, 20, (720,480))
     
@@ -165,7 +155,7 @@ if __name__ == "__main__":
         frame = cv2.resize(frame, (720,480))
         height, width, _ = frame.shape
 
-        canny = cnts(frame)
+        canny = cnts(frame) # Edge detection
         roi = ROI(canny) # Region of Interest
         lines = h_lines(frame, roi) # Compute Hough lines
 
@@ -173,13 +163,14 @@ if __name__ == "__main__":
 
         # cv2.imshow('ROI', roi)
 
-        cv2.imshow("frame", frame)
+        cv2.imshow("frame", frame) # Show resulting frame with lanes drawn on
         out.write(frame)
 
         # rec(frame)        
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
     cv2.waitKey(0)
     cap.release()
     cv2.destroyAllWindows()
