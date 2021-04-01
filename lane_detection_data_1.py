@@ -164,9 +164,7 @@ if __name__ == "__main__":
         # cv2.imshow('ROI', roi)
 
         cv2.imshow("frame", frame) # Show resulting frame with lanes drawn on
-        out.write(frame)
-
-        # rec(frame)        
+        out.write(frame)       
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
