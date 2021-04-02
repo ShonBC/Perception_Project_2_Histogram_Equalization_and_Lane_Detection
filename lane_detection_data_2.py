@@ -1,3 +1,4 @@
+from typing import SupportsFloat
 import cv2
 import lane_detection_data_1
 import numpy as np
@@ -41,6 +42,10 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
 
         x_1, y_1, x_2, y_2 = lines[i].reshape(4)
         param = np.polyfit((x_1, x_2), (y_1, y_2), 2) # Fit to a first degree polynomial
+
+        a = param[0]
+        b = param[1]
+        c = param[2]
 
         slope = param[0]
         y_int = param[1]
@@ -133,6 +138,7 @@ if __name__ == "__main__":
             break
         
         frame = cv2.resize(frame, (720,480))
+        frame = undistort(frame) # Undistort frame with camera matrix
         height, width, _ = frame.shape
         top = top_down(frame) # Use Homography for top down view
         cv2.imshow('top', top)
@@ -140,13 +146,12 @@ if __name__ == "__main__":
         canny = cnts(top) # Edge detection
         # roi = ROI(canny) # Region of Interest
         lines = h_lines(frame, canny) # Compute Hough lines
-        show_lines(top, lines)
+        fit(top, lines) # Average the returned Hough lines
+        # show_lines(top, lines)
         cv2.imshow('test', top)
         cv2.imshow('canny', canny)
-        D = undistort(frame)
-        cv2.imshow('undistort', D)
 
-        # fit(frame, lines) # Average the returned Hough lines
+        # fit(frame, top) # Average the returned Hough lines
         
         cv2.imshow("frame", frame)
         # out.write(frame)
