@@ -4,7 +4,7 @@ import lane_detection_data_1
 import numpy as np
 
 
-def undistort(frame):
+def undistort(frame): # Undistort frame with camera calibration matrix and distortion matrix
 
     #Camera Matrix
     K = [[1.15422732 * 10**3, 0,   6.71627794 * 10**2],
@@ -47,15 +47,15 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
         b = param[1]
         c = param[2]
 
-        slope = param[0]
-        y_int = param[1]
+        # slope = param[0]
+        # y_int = param[1]
 
-        if slope < 0:
-            l_lines.append((slope,y_int))
-        elif int(slope) == 0:
-            continue
-        else:
-            r_lines.append((slope, y_int))
+        # if slope < 0:
+        #     l_lines.append((slope,y_int))
+        # elif int(slope) == 0:
+        #     continue
+        # else:
+        #     r_lines.append((slope, y_int))
         
     l_avg = np.average(l_lines, axis=0)
     r_avg = np.average(r_lines, axis=0)
@@ -105,8 +105,8 @@ def cnts(image): # Use canny edge detection to define and display edges. Returns
     k = 3
     blurr = cv2.GaussianBlur(image, (k, k), 0) # Blurr frame
 
-    threshold_1 = 20 # Define Canny edge detection thresholds
-    threshold_2 = 150 # Define Canny edge detection thresholds
+    threshold_1 = 3 # Define Canny edge detection thresholds
+    threshold_2 = 50 # Define Canny edge detection thresholds
     canny = cv2.Canny(blurr, threshold_1, threshold_2) # Call Canny edge detection on blurred image
   
     return canny
@@ -146,7 +146,13 @@ if __name__ == "__main__":
         canny = cnts(top) # Edge detection
         # roi = ROI(canny) # Region of Interest
         lines = h_lines(frame, canny) # Compute Hough lines
-        fit(top, lines) # Average the returned Hough lines
+        
+
+        try:
+            fit(top, lines) # Average the returned Hough lines
+        except IndexError:
+            pass
+
         # show_lines(top, lines)
         cv2.imshow('test', top)
         cv2.imshow('canny', canny)
