@@ -131,7 +131,11 @@ if __name__ == "__main__":
 
         cv2.imshow('Gray Equilization', gray_eq)
 
-        out.write(gray_eq)
+        color = cv2.cvtColor(gray_eq, cv2.COLOR_GRAY2BGR)
+
+        cv2.imshow('Color', color)
+
+        out.write(color)
     
         # Condition to break the while loop
         i = cv2.waitKey(50)
