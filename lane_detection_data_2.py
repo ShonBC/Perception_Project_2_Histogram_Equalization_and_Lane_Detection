@@ -39,8 +39,8 @@ def color_mask(frame):
     
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    yellow_min = np.array([20, 15, 20])
-    yellow_max = np.array([30, 255, 170])
+    yellow_min = np.array([14, 25, 100])
+    yellow_max = np.array([100, 255, 255])
 
     ymask = cv2.inRange(hsv, yellow_min, yellow_max)
 
