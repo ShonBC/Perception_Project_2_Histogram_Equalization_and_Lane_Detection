@@ -19,28 +19,32 @@ def undistort(frame): # Undistort frame with camera calibration matrix and disto
 
     return dis_frame
 
-def top_down(img): # Homography for top down view
+def homog(img): # Homography for top down view and reverting back to front view
 
     w, h = 200, 500
 
-    src_points = np.float32([[330, 310], [440, 310], [160,460], [625, 460]])
+    src_points = np.float32([[330, 310], [440, 310], [110,460], [625, 460]])
     dst_points = np.float32([[0, 0], [w, 0], [0, h], [w, h]])
     
     M, mask = cv2.findHomography(src_points, dst_points)
+    M_inv, mask = cv2.findHomography(dst_points, src_points)
     # M = cv2.getPerspectiveTransform(src_points, dst_points)
 
     top = cv2.warpPerspective(img, M, (w, h))
+    front = cv2.warpPerspective(img, M_inv, (width, height))
 
-    return top
+    return top, front
 
 def yellow_mask(frame):
     
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    yellow_min = np.array([18, 94, 140])
-    yellow_max = np.array([48, 255, 255])
+    yellow_min = np.array([20, 15, 20])
+    yellow_max = np.array([30, 255, 255])
 
-    mask = cv2.inRange(hsv, yellow_min, yellow_max)
+    ymask = cv2.inRange(hsv, yellow_min, yellow_max)
+
+    return ymask
 
 
 def fit(frame, lines): # Takes the average of the lines detected and creates a best fit line 
@@ -150,28 +154,36 @@ if __name__ == "__main__":
         frame = cv2.resize(frame, (720,480))
         height, width, _ = frame.shape
         frame = undistort(frame) # Undistort frame with camera matrix
-        
-        top = top_down(frame) # Use Homography for top down view
+        top, _ = homog(frame)
+        _, front = homog(top)
+        cv2.imshow('back', front)
+
+        ymask = yellow_mask(top)
+        ycanny = cnts(ymask)
+        cv2.imshow('ymask', ycanny)
+
+
+        # top = top_down(frame) # Use Homography for top down view
         cv2.imshow('top', frame)
 
-        canny = cnts(top) # Edge detection
-        # roi = ROI(canny) # Region of Interest
-        lines = h_lines(frame, canny) # Compute Hough lines
+        # canny = cnts(top) # Edge detection
+        # # roi = ROI(canny) # Region of Interest
+        # lines = h_lines(frame, canny) # Compute Hough lines
         
 
-        # try:
-        #     fit(top, lines) # Average the returned Hough lines
-        # except IndexError:
-        #     pass
+        # # try:
+        # #     fit(top, lines) # Average the returned Hough lines
+        # # except IndexError:
+        # #     pass
 
-        # show_lines(top, lines)
-        cv2.imshow('test', top)
-        cv2.imshow('canny', canny)
+        # # show_lines(top, lines)
+        # cv2.imshow('test', top)
+        # cv2.imshow('canny', canny)
 
-        # fit(frame, top) # Average the returned Hough lines
+        # # fit(frame, top) # Average the returned Hough lines
         
-        cv2.imshow("frame", frame)
-        # out.write(frame)
+        # cv2.imshow("frame", frame)
+        # # out.write(frame)
         
         if cv2.waitKey(100) & 0xFF == ord('q'):
             break
@@ -181,6 +193,8 @@ if __name__ == "__main__":
     cv2.destroyAllWindows()
 
 """
+Filter for a region of interest
+
 Try filtering out everything except the lanes by color.
 
 Canny edge detection.
