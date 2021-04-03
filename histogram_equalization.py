@@ -91,11 +91,11 @@ def color(frame): # Histogram Equilization on color channels
     g_eq = equalize(g, g_CDF)
     r_eq = equalize(r, r_CDF)  
 
-        # Combine channels
+    # Combine channels
     final = cv2.merge((b_eq, g_eq, r_eq))
 
     # Gamma Correction
-    corr_frame = gamma_corret(gray, gamma = 1)
+    corr_frame = gamma_corret(final, gamma = 2)
 
     cv2.imshow("Color Equilization", corr_frame) # Show the projection
 
@@ -114,14 +114,12 @@ if __name__ == "__main__":
         
         frame = cv2.resize(frame, (720,480))
 
-    
-
         cv2.imshow("Video", frame)
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # Gamma Correction
         gamma_frame = gamma_corret(gray, gamma = .1)
-        cv2.imshow("Gamma Corrected", gamma_frame) # Show the projection
+        cv2.imshow("Gamma Corrected", gamma_frame) # Show the gamma correction on gray scale frame
 
         gray_PMF = pmf(gray)
 
@@ -129,13 +127,15 @@ if __name__ == "__main__":
 
         gray_eq = equalize(gray, gray_CDF) 
 
-        cv2.imshow('Gray Equilization', gray_eq)
+        cv2.imshow('Gray Equilization', gray_eq) # Show histogram equilization allpied on gray scale frame
 
-        color = cv2.cvtColor(gray_eq, cv2.COLOR_GRAY2BGR)
+        revert_frame = cv2.cvtColor(gray_eq, cv2.COLOR_GRAY2BGR) # Convert gray scale back to color
 
-        cv2.imshow('Color', color)
+        cv2.imshow('Gray to Color Converted Video', revert_frame) 
 
-        out.write(color)
+        color(frame) # Uncomment to show histogram equilization on color channels
+
+        # out.write(revert_frame) # Uncomment to save new output of desired frame
     
         # Condition to break the while loop
         i = cv2.waitKey(50)
