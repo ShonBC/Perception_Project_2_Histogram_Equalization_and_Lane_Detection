@@ -33,6 +33,16 @@ def top_down(img): # Homography for top down view
 
     return top
 
+def yellow_mask(frame):
+    
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    yellow_min = np.array([18, 94, 140])
+    yellow_max = np.array([48, 255, 255])
+
+    mask = cv2.inRange(hsv, yellow_min, yellow_max)
+
+
 def fit(frame, lines): # Takes the average of the lines detected and creates a best fit line 
 
     l_lines = []
@@ -149,10 +159,10 @@ if __name__ == "__main__":
         lines = h_lines(frame, canny) # Compute Hough lines
         
 
-        try:
-            fit(top, lines) # Average the returned Hough lines
-        except IndexError:
-            pass
+        # try:
+        #     fit(top, lines) # Average the returned Hough lines
+        # except IndexError:
+        #     pass
 
         # show_lines(top, lines)
         cv2.imshow('test', top)
@@ -168,4 +178,17 @@ if __name__ == "__main__":
 
     cv2.waitKey(0)
     cap.release()
-    cv2.destroyAllWindows( )
+    cv2.destroyAllWindows()
+
+"""
+Try filtering out everything except the lanes by color.
+
+Canny edge detection.
+
+return x,y coordinates of the yellow and white contours. 
+
+fit the coordinates to a 2nd degree polynomial.
+
+draw the lanes.
+
+"""
