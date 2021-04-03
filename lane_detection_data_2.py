@@ -40,7 +40,7 @@ def color_mask(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     yellow_min = np.array([20, 15, 20])
-    yellow_max = np.array([30, 255, 255])
+    yellow_max = np.array([30, 255, 170])
 
     ymask = cv2.inRange(hsv, yellow_min, yellow_max)
 
@@ -50,7 +50,6 @@ def color_mask(frame):
     wmask = cv2.inRange(hsv, white_min, white_max)
 
     return ymask, wmask
-
 
 def fit(frame, lines): # Takes the average of the lines detected and creates a best fit line 
 
@@ -165,8 +164,11 @@ if __name__ == "__main__":
 
         ymask, wmask = color_mask(top)
         ycanny = cnts(ymask)
-        cv2.imshow('ymask', ycanny)
+        wcanny = cnts(wmask)
+        cv2.imshow('ycanny', ycanny)
+        cv2.imshow('wmask', wcanny)
         cv2.imshow('wmask', wmask)
+        cv2.imshow('ymask', ymask)
 
         # top = top_down(frame) # Use Homography for top down view
         cv2.imshow('top', frame)
