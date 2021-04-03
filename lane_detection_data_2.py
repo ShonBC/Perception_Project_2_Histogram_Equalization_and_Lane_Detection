@@ -35,7 +35,7 @@ def homog(img): # Homography for top down view and reverting back to front view
 
     return top, front
 
-def yellow_mask(frame):
+def color_mask(frame):
     
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -44,7 +44,12 @@ def yellow_mask(frame):
 
     ymask = cv2.inRange(hsv, yellow_min, yellow_max)
 
-    return ymask
+    white_min = np.array([0, 0, 200])
+    white_max =np.array([255, 255, 255])
+
+    wmask = cv2.inRange(hsv, white_min, white_max)
+
+    return ymask, wmask
 
 
 def fit(frame, lines): # Takes the average of the lines detected and creates a best fit line 
@@ -158,10 +163,10 @@ if __name__ == "__main__":
         _, front = homog(top)
         cv2.imshow('back', front)
 
-        ymask = yellow_mask(top)
+        ymask, wmask = color_mask(top)
         ycanny = cnts(ymask)
         cv2.imshow('ymask', ycanny)
-
+        cv2.imshow('wmask', wmask)
 
         # top = top_down(frame) # Use Homography for top down view
         cv2.imshow('top', frame)
