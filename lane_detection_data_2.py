@@ -6,15 +6,6 @@ import numpy as np
 
 def undistort(frame): # Undistort frame with camera calibration matrix and distortion matrix
 
-    # #Camera Matrix
-    # K = [[1.15422732 * 10**3, 0,   6.71627794 * 10**2],
-    # [0,   1.14818221 * 10**3, 3.86046312 * 10**2],
-    # [0, 0, 1]]
-
-    # #Distortion Coefficients
-    # dist = np.array[[ -2.42565104e-01,  -4.77893070e-02,  -1.31388084e-03,  -8.79107779e-05,
-    #     2.20573263e-02]]
-
     #Camera Matrix
     K = np.array([[1.15422732e+03, 0.00000000e+00, 6.71627794e+02],
     [0.00000000e+00, 1.14818221e+03, 3.86046312e+02],
