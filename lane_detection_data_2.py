@@ -6,16 +6,25 @@ import numpy as np
 
 def undistort(frame): # Undistort frame with camera calibration matrix and distortion matrix
 
+    # #Camera Matrix
+    # K = [[1.15422732 * 10**3, 0,   6.71627794 * 10**2],
+    # [0,   1.14818221 * 10**3, 3.86046312 * 10**2],
+    # [0, 0, 1]]
+
+    # #Distortion Coefficients
+    # dist = np.array[[ -2.42565104e-01,  -4.77893070e-02,  -1.31388084e-03,  -8.79107779e-05,
+    #     2.20573263e-02]]
+
     #Camera Matrix
-    K = [[1.15422732 * 10**3, 0,   6.71627794 * 10**2],
-    [0,   1.14818221 * 10**3, 3.86046312 * 10**2],
-    [0, 0, 1]]
+    K = np.array([[1.15422732e+03, 0.00000000e+00, 6.71627794e+02],
+    [0.00000000e+00, 1.14818221e+03, 3.86046312e+02],
+    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
 
     #Distortion Coefficients
-    dist = [[ -2.42565104e-01,  -4.77893070e-02,  -1.31388084e-03,  -8.79107779e-05,
-        2.20573263e-02]]
+    dist = np.array([[-2.42565104e-01, -4.77893070e-02, -1.31388084e-03, -8.79107779e-05, 2.20573263e-02]])
 
-    dis_frame = cv2.undistort(frame, np.float32(K), np.float32(dist), None)
+    # dis_frame = cv2.undistort(frame, np.float32(K), np.float32(dist), None)
+    dis_frame = cv2.undistort(frame, K, dist, None)
 
     return dis_frame
 
@@ -138,10 +147,11 @@ if __name__ == "__main__":
             break
         
         frame = cv2.resize(frame, (720,480))
-        frame = undistort(frame) # Undistort frame with camera matrix
         height, width, _ = frame.shape
+        frame = undistort(frame) # Undistort frame with camera matrix
+        
         top = top_down(frame) # Use Homography for top down view
-        cv2.imshow('top', top)
+        cv2.imshow('top', frame)
 
         canny = cnts(top) # Edge detection
         # roi = ROI(canny) # Region of Interest
