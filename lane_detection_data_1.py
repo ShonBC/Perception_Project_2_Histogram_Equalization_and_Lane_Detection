@@ -87,6 +87,9 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
     cv2.line(frame, (l_bfl[0], l_bfl[1]), (l_bfl[2], l_bfl[3]), (255, 0, 0), 3)
     cv2.line(frame, (r_bfl[0], r_bfl[1]), (r_bfl[2], r_bfl[3]), (255, 0, 0), 3)
 
+    points = np.array([[[r_bfl[0], r_bfl[1]], [l_bfl[0], l_bfl[1]], [l_bfl[2], l_bfl[3]], [r_bfl[2], r_bfl[3]]]], dtype=np.int32)
+    cv2.fillPoly(frame, points, (0,0,255))
+
     return l_bfl, r_bfl    
 
 def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
@@ -119,8 +122,8 @@ def show_lines(frame, lines): # Display lines
     if lines is not None: 
             for i in range(len(lines)):
                 l = lines[i][0]
-                cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3) 
-
+                cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3)    
+    
 def top_down(img): # Homography for top down view
 
     w, h = 200, 500
