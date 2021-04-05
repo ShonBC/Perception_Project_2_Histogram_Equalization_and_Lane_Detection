@@ -106,7 +106,7 @@ def color(frame): # Histogram Equilization on color channels
 
 # Define Video out properties
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter('projection.mp4', fourcc, 240, (720,480))
+out = cv2.VideoWriter('histogram_equalization.mp4', fourcc, 240, (720,480))
 
 if __name__ == "__main__":
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         color(frame) # Uncomment to show histogram equilization on color channels
 
-        out.write(revert_frame) # Uncomment to save new output of desired frame
+        # out.write(revert_frame) # Uncomment to save new output of desired frame
     
         # Condition to break the while loop
         if cv2.waitKey(1) & 0xFF == ord('q'):
