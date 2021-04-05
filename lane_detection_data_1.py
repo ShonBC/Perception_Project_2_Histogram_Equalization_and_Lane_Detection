@@ -109,7 +109,7 @@ def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
 
     return ln_coord    
 
-def h_lines(frame, roi): # Use Probablistic Hough Transform to detect lines from canny edges 
+def h_lines(frame, roi): # Use Probabilistic Hough Transform to detect lines from canny edges 
 
     rho_tolerance = 2 # measured in pixels
     theta_tolerance = np.pi / 180 # measured in radians
