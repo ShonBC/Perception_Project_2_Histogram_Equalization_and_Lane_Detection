@@ -227,7 +227,7 @@ if __name__ == "__main__":
 
         cv2.imshow('frame', frame)
         
-        out.write(frame)
+        # out.write(frame) # Uncomment to save new output of desired frame
         
         if cv2.waitKey(100) & 0xFF == ord('q'):
             break
