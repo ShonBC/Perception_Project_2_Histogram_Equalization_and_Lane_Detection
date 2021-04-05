@@ -15,7 +15,7 @@ Packages Used:
 
 Run the program:
 
-        1. Run the program using your prefered method (terminal...)
+        1. Run the program using your preferred method (terminal...)
 
         Example in Terminal:
 
@@ -26,7 +26,7 @@ Run the program:
     Program Summary:
         
         Use histogram equalization techniques to enhance the contrast and improve the visual appearance of a video.
-        The program will show histogram equalization applied to a grayscal video as well as the color video (by splitting the vidoe into its 3 color channels, using histogram equalization, then combining the color channels), as well as a gamma correction technique to adjust contrast.
+        The program will show histogram equalization applied to a gray scale video as well as the color video (by splitting the video into its 3 color channels, using histogram equalization, then combining the color channels), as well as a gamma correction technique to adjust contrast.
         
         
 lane_detection_data_1.py:
@@ -40,7 +40,7 @@ Packages Used:
 
 Run the program:
 
-        1. Run the program using your prefered method (terminal...)
+        1. Run the program using your preferred method (terminal...)
 
         Example in Terminal:
 
@@ -50,7 +50,7 @@ Run the program:
         
     Program Summary:
         
-        Use hough transfrom for lane detection to mimic Warning systems used in Self Driving Cars. 
+        Use hough transform for lane detection to mimic Warning systems used in Self Driving Cars. 
         The program will do canny edge detection then isolate a region of interest.
         It then detects all lines and sorts them into right and left lanes by checking the slope of the lines and takes their average.
         Finally it overlays the detected lanes on the original video.
@@ -66,7 +66,7 @@ Packages Used:
 
 Run the program:
 
-        1. Run the program using your prefered method (terminal...)
+        1. Run the program using your preferred method (terminal...)
 
         Example in Terminal:
 
@@ -76,7 +76,7 @@ Run the program:
         
     Program Summary:
         
-        Use hough transfrom for lane detection to mimic Warning systems used in Self Driving Cars. 
+        Use hough transform for lane detection to mimic Warning systems used in Self Driving Cars. 
         The program will use homography to isolate a region of interest and filter the frame for only white and yellow pixels.
         It then does canny edge detection and further isolates a region of interest.
         It then detects all lines in the yellow and white filtered frames and takes their average.
