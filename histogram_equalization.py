@@ -1,3 +1,8 @@
+"""
+Shon Cortes
+ENPM 673 - Perception for Autonomous Robots:
+Project 2 Histogram Equilization 
+"""
 import cv2
 import numpy as np
 
