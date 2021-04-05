@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
         # color(frame) # Uncomment to show histogram equalization on color channels
 
-        out.write(revert_frame) # Uncomment to save new output of desired frame
+        # out.write(revert_frame) # Uncomment to save new output of desired frame
     
         # Condition to break the while loop
         if cv2.waitKey(1) & 0xFF == ord('q'):
