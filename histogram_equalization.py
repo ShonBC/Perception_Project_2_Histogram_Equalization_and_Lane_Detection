@@ -132,15 +132,15 @@ if __name__ == "__main__":
 
         gray_eq = equalize(gray, gray_CDF) 
 
-        cv2.imshow('Gray Equilization', gray_eq) # Show histogram equalization allpied on gray scale frame
+        cv2.imshow('Gray Equalization', gray_eq) # Show histogram equalization allpied on gray scale frame
 
         revert_frame = cv2.cvtColor(gray_eq, cv2.COLOR_GRAY2BGR) # Convert gray scale back to color
 
         cv2.imshow('Gray to Color Converted Video', revert_frame) 
 
-        color(frame) # Uncomment to show histogram equalization on color channels
+        # color(frame) # Uncomment to show histogram equalization on color channels
 
-        # out.write(revert_frame) # Uncomment to save new output of desired frame
+        out.write(revert_frame) # Uncomment to save new output of desired frame
     
         # Condition to break the while loop
         if cv2.waitKey(1) & 0xFF == ord('q'):
