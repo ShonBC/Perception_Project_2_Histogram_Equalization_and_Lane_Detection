@@ -1,6 +1,8 @@
-# Shon Cortes
-
-
+"""
+Shon Cortes
+ENPM 673 - Perception for Autonomous Robots:
+Project 2 Lane Detection on Data Set 1 
+"""
 import glob
 import cv2
 from cv2 import data
@@ -49,7 +51,7 @@ def cnts(image): # Use canny edge detection to define and display edges. Returns
 
 def ROI(frame): # Isolate the region of interest (the road)
 
-    roi = np.array([[(55, height - 10), (0, height - 10), (530, height - 10), (340, 200)]])
+    roi = np.array([[(55, height - 10), (0, height - 10), (530, height - 10), (340, 200)]], dtype= np.int32)
 
     mask = np.zeros_like(frame)
     cv2.fillPoly(mask, roi, 255)
