@@ -82,15 +82,16 @@ def fit(frame, lines): # Takes the average of the lines detected and creates a b
         
     l_avg = np.average(l_lines, axis=0)
     r_avg = np.average(r_lines, axis=0)
-
     l_bfl = line_pos(l_avg)
     r_bfl = line_pos(r_avg)
-
-    cv2.line(frame, (l_bfl[0], l_bfl[1]), (l_bfl[2], l_bfl[3]), (255, 0, 0), 3)
-    cv2.line(frame, (r_bfl[0], r_bfl[1]), (r_bfl[2], r_bfl[3]), (255, 0, 0), 3)
+    c_bfl = (l_bfl + r_bfl) / 2
 
     points = np.array([[[r_bfl[0], r_bfl[1]], [l_bfl[0], l_bfl[1]], [l_bfl[2], l_bfl[3]], [r_bfl[2], r_bfl[3]]]], dtype=np.int32)
     cv2.fillPoly(frame, points, (0,0,255))
+
+    cv2.line(frame, (l_bfl[0], l_bfl[1]), (l_bfl[2], l_bfl[3]), (255, 0, 0), 3)
+    cv2.line(frame, (r_bfl[0], r_bfl[1]), (r_bfl[2], r_bfl[3]), (255, 0, 0), 3)
+    cv2.line(frame, (int(c_bfl[0]), int(c_bfl[1])), (int(c_bfl[2]), int(c_bfl[3])), (0, 255, 0), 3)
 
     return l_bfl, r_bfl    
 
