@@ -2,7 +2,7 @@
 
 # ENPM 673 - Perception for Autonomous Robots:
 
-# Project 1 - AR Tag Detection, Decoding, Tracking/Projection and Homography
+# Project 2 - Histogram Equalization and Lane Detection
 
 # Shon Cortes
 
