@@ -102,7 +102,7 @@ def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
 
     return ln_coord    
 
-def h_lines(roi): # Use Probablistic Hough Transform to detect lines from canny edges 
+def h_lines(roi): # Use Probabilistic Hough Transform to detect lines from canny edges 
 
     rho_tolerance = 2 # measured in pixels
     theta_tolerance = np.pi / 180 # measured in radians
@@ -130,7 +130,7 @@ def show_lines_avg(frame, lines): # Display lines
 def cnts(image): # Use canny edge detection to define and display edges. Returns AR Tag x, y coordinates.
 
     k = 9
-    blurr = cv2.GaussianBlur(image, (k, k), 0) # Blurr frame
+    blurr = cv2.GaussianBlur(image, (k, k), 0) # Blur frame
 
     threshold_1 = 10 # Define Canny edge detection thresholds
     threshold_2 = 100 # Define Canny edge detection thresholds
