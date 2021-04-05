@@ -1,7 +1,7 @@
 """
 Shon Cortes
 ENPM 673 - Perception for Autonomous Robots:
-Project 2 Histogram Equilization 
+Project 2 Histogram Equalization 
 """
 import cv2
 import numpy as np
@@ -68,7 +68,7 @@ def gamma_corret(frame, gamma = 1): # Gamma Correction method
 
     return corr_frame
 
-def color(frame): # Histogram Equilization on color channels
+def color(frame): # Histogram Equalization on color channels
 
     """
     Break frame out into the 3 color channels
@@ -132,13 +132,13 @@ if __name__ == "__main__":
 
         gray_eq = equalize(gray, gray_CDF) 
 
-        cv2.imshow('Gray Equilization', gray_eq) # Show histogram equilization allpied on gray scale frame
+        cv2.imshow('Gray Equilization', gray_eq) # Show histogram equalization allpied on gray scale frame
 
         revert_frame = cv2.cvtColor(gray_eq, cv2.COLOR_GRAY2BGR) # Convert gray scale back to color
 
         cv2.imshow('Gray to Color Converted Video', revert_frame) 
 
-        color(frame) # Uncomment to show histogram equilization on color channels
+        color(frame) # Uncomment to show histogram equalization on color channels
 
         # out.write(revert_frame) # Uncomment to save new output of desired frame
     
