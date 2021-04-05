@@ -1,8 +1,11 @@
-from typing import SupportsFloat
-import cv2
-import lane_detection_data_1
-import numpy as np
+"""
+Shon Cortes
+ENPM 673 - Perception for Autonomous Robots:
+Project 2 Lane Detection on Data Set 2
+"""
 
+import cv2
+import numpy as np
 
 def undistort(frame): # Undistort frame with camera calibration matrix and distortion matrix
 
@@ -21,7 +24,7 @@ def undistort(frame): # Undistort frame with camera calibration matrix and disto
 
 def homog(img): # Homography for top down view and reverting back to front view
 
-    w, h = 200, 500
+    h, w, _ = img.shape
 
     src_points = np.float32([[330, 310], [440, 310], [110,460], [625, 460]])
     dst_points = np.float32([[0, 0], [w, 0], [0, h], [w, h]])
@@ -35,7 +38,7 @@ def homog(img): # Homography for top down view and reverting back to front view
 
     return top, front
 
-def color_mask(frame):
+def color_mask(frame): #  Return a mask of only the detected yellow and white pixels.
     
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -49,42 +52,41 @@ def color_mask(frame):
 
     wmask = cv2.inRange(hsv, white_min, white_max)
 
-    return ymask, wmask
+    return ymask, wmask 
 
-def fit(frame, lines): # Takes the average of the lines detected and creates a best fit line 
+def fit(frame, y_lines, w_lines): # Takes the average of the lines detected and creates a best fit line 
 
-    l_lines = []
-    r_lines = []
+    global ylines, wlines
 
-    for i in range(len(lines)):
+    if y_lines is None:
+        y_lines = ylines
+        yline_avg = np.average(y_lines, axis=0)
+        show_lines_avg(frame, yline_avg)
+    else:
+        ylines = y_lines
+    
+        yline_avg = np.average(y_lines, axis=0)
+        show_lines_avg(frame, yline_avg)
+    
+    if w_lines is None:
+        w_lines = wlines
+        try:
+            wline_avg = np.average(w_lines, axis=0)
+            show_lines_avg(frame, wline_avg)
+        except TypeError:
+            
+            pass
+    
+    else:
+        wlines = w_lines
+        wline_avg = np.average(w_lines, axis=0)
+        show_lines_avg(frame, wline_avg)
 
-        x_1, y_1, x_2, y_2 = lines[i].reshape(4)
-        param = np.polyfit((x_1, x_2), (y_1, y_2), 2) # Fit to a first degree polynomial
-
-        a = param[0]
-        b = param[1]
-        c = param[2]
-
-        # slope = param[0]
-        # y_int = param[1]
-
-        # if slope < 0:
-        #     l_lines.append((slope,y_int))
-        # elif int(slope) == 0:
-        #     continue
-        # else:
-        #     r_lines.append((slope, y_int))
-        
-    l_avg = np.average(l_lines, axis=0)
-    r_avg = np.average(r_lines, axis=0)
-
-    l_bfl = line_pos(l_avg)
-    r_bfl = line_pos(r_avg)
-
-    cv2.line(frame, (l_bfl[0], l_bfl[1]), (l_bfl[2], l_bfl[3]), (255, 0, 0), 3)
-    cv2.line(frame, (r_bfl[0], r_bfl[1]), (r_bfl[2], r_bfl[3]), (255, 0, 0), 3)
-
-    return l_bfl, r_bfl    
+    try:
+        points = np.array([[[wline_avg[0][0], wline_avg[0][1]], [wline_avg[0][2], wline_avg[0][3]], [yline_avg[0][0], yline_avg[0][1]], [yline_avg[0][2], yline_avg[0][3]]]], dtype=np.int32)
+        cv2.fillPoly(frame, points, (0,0,255))
+    except IndexError:
+            pass
 
 def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
 
@@ -100,14 +102,14 @@ def line_pos(line): # Using line slope and y-intercept, return x,y coordinates
 
     return ln_coord    
 
-def h_lines(frame, roi): # Use Probablistic Hough Transform to detect lines from canny edges 
+def h_lines(roi): # Use Probablistic Hough Transform to detect lines from canny edges 
 
     rho_tolerance = 2 # measured in pixels
     theta_tolerance = np.pi / 180 # measured in radians
     min_vote = 100 # minimum points on the line detected for it to be considered as a line
     min_length = 20
 
-    lines = cv2.HoughLinesP(roi, rho_tolerance, theta_tolerance, min_vote, minLineLength= min_length, maxLineGap= 1000)
+    lines = cv2.HoughLinesP(roi, rho_tolerance, theta_tolerance, min_vote, minLineLength= min_length, maxLineGap= 5000)
 
     return lines
 
@@ -118,20 +120,29 @@ def show_lines(frame, lines): # Display lines
                 l = lines[i][0]
                 cv2.line(frame, (l[0], l[1]), (l[2], l[3]), (255, 0, 0), 3) 
 
+def show_lines_avg(frame, lines): # Display lines
+
+    if lines is not None: 
+         for i in range(len(lines)):
+                l = lines[i]   
+                cv2.line(frame, (int(l[0]), int(l[1])), (int(l[2]), int(l[3])), (255, 0, 0), 3) 
+
 def cnts(image): # Use canny edge detection to define and display edges. Returns AR Tag x, y coordinates.
 
-    k = 3
+    k = 9
     blurr = cv2.GaussianBlur(image, (k, k), 0) # Blurr frame
 
-    threshold_1 = 3 # Define Canny edge detection thresholds
-    threshold_2 = 50 # Define Canny edge detection thresholds
+    threshold_1 = 10 # Define Canny edge detection thresholds
+    threshold_2 = 100 # Define Canny edge detection thresholds
     canny = cv2.Canny(blurr, threshold_1, threshold_2) # Call Canny edge detection on blurred image
-  
-    return canny
+    
+    contours, hierarchy = cv2.findContours(canny, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    return canny, contours
 
 def ROI(frame): # Isolate the region of interest (the road)
 
-    roi = np.array([[(55, height - 10), (0, height - 10), (530, height - 10), (340, 200)]])
+    roi = np.array([[(0, height / 2), (0, height), (width, height), (width, height / 2)]], dtype= np.int32)
 
     mask = np.zeros_like(frame)
     cv2.fillPoly(mask, roi, 255)
@@ -140,13 +151,48 @@ def ROI(frame): # Isolate the region of interest (the road)
 
     return mask
 
-if __name__ == "__main__":
+def fit_poly(contours, x_start, x_lim):
 
-    # # Define Video out properties
+    x_cord = []
+    y_cord = []
+
+    for i in range(len(contours)):
+        for j in range(len(contours[i])):
+
+            x_cord.append(contours[i][j][0][0])
+            y_cord.append(contours[i][j][0][1])
+
+    try:
+
+        curve = np.polyfit(x_cord, y_cord, 2)
+        # x_range = np.linspace(0, 500, 100) top.shape[1] / 2
+        x_range = np.linspace(start= x_start, stop= x_lim, num= 100)
+        y_range = np.polyval(curve, x_range)
+
+        drawl = (np.asarray([x_range, y_range]).T).astype(np.int32)
+    
+    except TypeError:
+        return
+
+    return drawl
+
+def func(x, a, b, c):
+    return a * x + b*x**2 + c
+
+def draw_poly(frame, draw):
+
+    cv2.polylines(frame, [draw], False, (255, 0, 0), 3)
+
+def main_hough():
+
+     # # Define Video out properties
     # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     # out = cv2.VideoWriter('lane_detection_2.mp4', fourcc, 240, (1920, 1080))
 
     cap = cv2.VideoCapture('media/data_2/challenge_video.mp4')
+
+    ylines = []
+    wlines = []
 
     while True:
          
@@ -163,31 +209,76 @@ if __name__ == "__main__":
         cv2.imshow('back', front)
 
         ymask, wmask = color_mask(top)
-        ycanny = cnts(ymask)
-        wcanny = cnts(wmask)
+        ycanny, ycontours = cnts(ymask)
+        wcanny, wcontours = cnts(wmask)
+        y_lines = h_lines(ycanny)
+        w_lines = h_lines(wcanny)
+        if y_lines is None:
+            y_lines = ylines
+        else:
+            ylines = y_lines
+        if w_lines is None:
+            w_lines = wlines
+        else:
+            wlines = w_lines
+        show_lines(ycanny,y_lines)
+        show_lines(wcanny, w_lines)
         cv2.imshow('ycanny', ycanny)
-        cv2.imshow('wmask', wcanny)
+        cv2.imshow('wcanny', wcanny)
         cv2.imshow('wmask', wmask)
         cv2.imshow('ymask', ymask)
 
-        # top = top_down(frame) # Use Homography for top down view
-        cv2.imshow('top', frame)
 
-        # canny = cnts(top) # Edge detection
-        # # roi = ROI(canny) # Region of Interest
-        # lines = h_lines(frame, canny) # Compute Hough lines
+        if cv2.waitKey(100) & 0xFF == ord('q'):
+            break
+
+    cv2.waitKey(0)
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+
+    # # Define Video out properties
+    # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    # out = cv2.VideoWriter('lane_detection_2.mp4', fourcc, 240, (1920, 1080))
+
+    cap = cv2.VideoCapture('media/data_2/challenge_video.mp4')
+
+    ylines = []
+    wlines = []
+    lines_ = []  
+    yline_avg = []
+    wline_avg = []
+
+    while True:
+         
+        ret, frame = cap.read()
+
+        if not ret: # If no frame returned, break the loop
+            break
         
+        frame = cv2.resize(frame, (720,480))
+        height, width, _ = frame.shape
+        frame = undistort(frame) # Undistort frame with camera matrix
+        top, _ = homog(frame)
+        _, front = homog(top)
 
-        # # try:
-        # #     fit(top, lines) # Average the returned Hough lines
-        # # except IndexError:
-        # #     pass
+        ymask, wmask = color_mask(front)
+        ycanny, ycontours = cnts(ymask)
+        wcanny, wcontours = cnts(wmask)
 
-        # # show_lines(top, lines)
-        # cv2.imshow('test', top)
-        # cv2.imshow('canny', canny)
+        # Isolate Reigon of Interest
+        y_roi = ROI(ycanny)
+        w_roi = ROI(wcanny)
 
-        # # fit(frame, top) # Average the returned Hough lines
+        # Find lines using Hough Lines
+        y_lines = h_lines(ycanny)
+        w_lines = h_lines(wcanny)
+       
+       # Take average of lines found, group into left and right lines, show lines and fill lane
+        fit(frame, y_lines, w_lines)
+
+        cv2.imshow('frame', frame)
         
         # cv2.imshow("frame", frame)
         # # out.write(frame)
